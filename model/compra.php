@@ -183,13 +183,30 @@ class compra
 		}
 	}
 	
-	public function ListarDiaItems($fecha)
+	public function ListarDiaItems($fecha, $id_sucursal)
 	{
 		try
 		{
+			$sucursal = '';
+			if (!empty($id_sucursal)) {
+				$sucursal = "AND v.id_sucursal = ?";
+			}
 			
-			$stm = $this->pdo->prepare("SELECT v.metodo, v.contado, v.id_compra, a.nombre as nombre_cli, v.anulado, c.producto, v.descuento, v.precio_compra, v.cantidad, fecha_compra, nro_comprobante, v.id_producto, (SELECT user FROM usuario WHERE id = v.id_vendedor) as vendedor FROM compras v LEFT JOIN productos c ON v.id_producto = c.id LEFT JOIN clientes a ON v.id_cliente = a.id WHERE CAST(v.fecha_compra AS date) = ? AND v.anulado <> 1 ORDER BY v.id ASC");
-			$stm->execute(array($fecha));
+			$stm = $this->pdo->prepare("SELECT v.metodo, v.contado, v.id_compra, a.nombre as nombre_cli, 
+			v.anulado, c.producto, v.descuento, v.precio_compra, v.cantidad, 
+			fecha_compra, nro_comprobante, v.id_producto, 
+			(SELECT user FROM usuario WHERE id = v.id_vendedor) as vendedor FROM compras v 
+			LEFT JOIN productos c ON v.id_producto = c.id 
+			LEFT JOIN sucursales s ON s.id = v.id_sucursal
+			LEFT JOIN clientes a ON v.id_cliente = a.id WHERE CAST(v.fecha_compra AS date) = ? AND v.anulado <> 1 $sucursal 
+			ORDER BY v.id ASC");
+			
+			if (!empty($id_sucursal)) {
+				$stm->execute(array($fecha, $id_sucursal));
+			} else {
+				$stm->execute(array($fecha));
+			}
+			
 			return $stm->fetchAll(PDO::FETCH_OBJ);
 		}
 		catch(Exception $e)
@@ -198,13 +215,27 @@ class compra
 		}
 	}
 	
-	public function ListarMesItems($fecha)
+	
+	
+	public function ListarMesItems($fecha, $id_sucursal)
 	{
 		try
 		{
+			$sucursal = '';
+			if (empty($id_sucursal)) {
+				$sucursal = '';
+			} else {
+				$sucursal = "AND v.id_sucursal = ?";
+			}
 			
-			$stm = $this->pdo->prepare("SELECT v.metodo, v.contado, v.id_compra, a.nombre as nombre_cli, v.anulado, c.producto, v.descuento, v.precio_compra, v.cantidad, fecha_compra, nro_comprobante, v.id_producto, (SELECT user FROM usuario WHERE id = v.id_vendedor) as vendedor FROM compras v LEFT JOIN productos c ON v.id_producto = c.id LEFT JOIN clientes a ON v.id_cliente = a.id WHERE MONTH(v.fecha_compra) = MONTH(?) AND YEAR(v.fecha_compra) = YEAR(?) AND v.anulado <> 1 ORDER BY v.id ASC");
-			$stm->execute(array($fecha, $fecha));
+			$stm = $this->pdo->prepare("SELECT v.metodo, v.contado, v.id_compra, a.nombre as nombre_cli, v.anulado, c.producto, v.descuento, v.precio_compra, v.cantidad, fecha_compra, nro_comprobante, v.id_producto, (SELECT user FROM usuario WHERE id = v.id_vendedor) as vendedor FROM compras v LEFT JOIN productos c ON v.id_producto = c.id LEFT JOIN clientes a ON v.id_cliente = a.id WHERE MONTH(v.fecha_compra) = MONTH(?) AND YEAR(v.fecha_compra) = YEAR(?) AND v.anulado <> 1 $sucursal ORDER BY v.id ASC");
+			
+			if (empty($id_sucursal)) {
+				$stm->execute(array($fecha, $fecha));
+			} else {
+				$stm->execute(array($fecha, $fecha, $id_sucursal));
+			}
+			
 			return $stm->fetchAll(PDO::FETCH_OBJ);
 		}
 		catch(Exception $e)
@@ -212,6 +243,7 @@ class compra
 			die($e->getMessage());
 		}
 	}
+	
 	
 	public function ListarMesSinAnular($fecha)
 	{

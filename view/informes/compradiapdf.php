@@ -1,6 +1,6 @@
 <?php
 
-require_once('plugins/tcpdf/pdf/tcpdf_include.php');
+require_once('plugins/tcpdf2/tcpdf.php');
 
 
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -11,8 +11,12 @@ $fechaInforme = date("d-m-Y", strtotime($_REQUEST['fecha']));
 $horahoy = date("H:i");
 
 
+$sucursal = $this->sucursal->Obtener($_REQUEST['id_sucursal']);
+$s=$sucursal != null ? $sucursal->sucursal :'Todos';
+
 $html1 = <<<EOF
 		<h1 align="center">Informe de compras de la fecha $fechaInforme</h1>
+		<p>De: $s</p>
 		<p>Generado a las $horahoy de la fecha $fechahoy</p>
 		<div>
 		<table width="100%">
@@ -59,7 +63,7 @@ $totalContado = 0;
 $totalCosto = 0;
 $totalVenta = 0;
 
-foreach($this->model->ListarDiaItems($_REQUEST['fecha']) as $r):
+foreach($this->model->ListarDiaItems($_REQUEST['fecha'], $_REQUEST['id_sucursal']) as $r):
 
 $total=number_format(($r->precio_compra*$r->cantidad),0,",",".");
 $costo=number_format($r->precio_compra,0,",",".");
