@@ -1,6 +1,7 @@
 <h1 class="page-header">compras del <?php echo date("d/m/Y"); ?> &nbsp;
-<a class="btn btn-success" href="index.php?c=compra&a=cierre&fecha=<?php echo date("Y-m-d"); ?>">Informe del día</a></h1>
-<a class="btn btn-success" href="index.php?c=compra&a=cierremes&fecha=<?php echo date("Y-m-d"); ?>">Informe del Mes</a></h1>
+<!-- <a class="btn btn-success" href="index.php?c=compra&a=cierre&fecha=<?php //echo date("Y-m-d"); ?>">Informe del día</a></h1>
+<a class="btn btn-success" href="index.php?c=compra&a=cierremes&fecha=<?php //echo date("Y-m-d"); ?>">Informe del Mes</a>-->
+</h1> 
 <a class="btn btn-primary pull-right" href="?c=compra_tmp" class="btn btn-success">Nueva compra</a>
 <br><br><br>
 <table class="table table-striped table-bordered display responsive nowrap datatable">
